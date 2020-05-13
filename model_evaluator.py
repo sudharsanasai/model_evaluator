@@ -22,7 +22,7 @@ class ModelEvaluator:
     torch.save(self.models,self.file_path)
       
   def remove_model(self,model_name):
-    pass
+    del self.models[model_name]
   
   def is_empty(self):
     return len(self.models) == 0
