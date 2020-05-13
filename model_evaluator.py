@@ -1,4 +1,3 @@
-
 import os
 import torch
 
@@ -19,9 +18,12 @@ class ModelEvaluator:
       self.models = {}
     
   def add_model(self,model_name,model_dict):
-      self.models[model_name] = model_dict
-      torch.save(self.models,self.file_path)
-
+    self.models[model_name] = model_dict
+    torch.save(self.models,self.file_path)
+      
+  def remove_model(self,model_name):
+    pass
+  
   def is_empty(self):
     return len(self.models) == 0
 
