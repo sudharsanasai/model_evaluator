@@ -1,7 +1,7 @@
 import os
 import torch
 
-class ModelEvaluator:
+class Model:
   
 
   def __init__(self,dataset,file_path):
@@ -29,9 +29,12 @@ class ModelEvaluator:
     except FileNotFoundError:
       self.models = {}
     
-  def add_model(self,model_name,model_dict):
-    self.models[model_name] = model_dict
-    torch.save(self.models,self.file_path)
+  def add_model(self,model_name):
+    if self.validate_model():
+      self.models[model_name] = self.model
+      torch.save(self.models,self.file_path)
+    else:
+      print("Model not added.")
       
   def remove_model(self,model_name):
     del self.models[model_name]
@@ -54,3 +57,29 @@ class ModelEvaluator:
       os.remove(self.file_path)
       self.models = {}
 
+  def validate_model(self):
+    is_valid = True
+    
+    for model_architecture_param in self.model['model_architecture'].keys():
+      if self.model['model_architecture'][model_architecture_param] is None:
+        print(model_architecture_param+" is not set.")
+        is_valid = False
+    
+    for training_param in self.model['training_parameters'].keys():
+      if self.model['training_parameters'][training_param] is None:
+        print(training_param+" is not set.")
+        is_valid = False
+        
+    if self.model['data']['train_set'] is None:
+      print('Training Set is not set.')
+      is_valid = False
+        
+    if len(self.model['training_stats']['epoch_time']) == 0:
+      print('Epoch Timings is not set.')
+      is_valid = False
+        
+    if len(self.model['training_stats']['epoch_average_batch_loss']) == 0:
+      print('Epoch losses are not set.')
+      is_valid = False
+        
+    return is_valid
