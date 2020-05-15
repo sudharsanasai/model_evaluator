@@ -11,9 +11,7 @@ class ModelEvaluator:
       self.models = torch.load(file_path)
     except FileNotFoundError:
       self.models = {}
-      
-  def init_model(self):
-    model = {'model_architecture':{'model':None,
+    self.model = {'model_architecture':{'model':None,
                                'optimizer':None,
                                'criterion':None},
          'data':{'train_set':None},
@@ -24,7 +22,6 @@ class ModelEvaluator:
         'training_stats':{'total_train_time':None,
                           'epoch_time':[],
                           'epoch_average_batch_loss':[]}}
-    return model
 
   def load_model(self,file_path):
     try:
