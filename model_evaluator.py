@@ -2,6 +2,7 @@ import os
 import torch
 
 class ModelEvaluator:
+  
 
   def __init__(self,dataset,file_path):
     self.dataset = dataset
@@ -10,6 +11,20 @@ class ModelEvaluator:
       self.models = torch.load(file_path)
     except FileNotFoundError:
       self.models = {}
+      
+  def init_model(self):
+    model = {'model_architecture':{'model':None,
+                               'optimizer':None,
+                               'criterion':None},
+         'data':{'train_set':None},
+        'training_parameters':{'no_of_steps_per_epoch':None,
+                               'device':None,
+                               'epochs':None,
+                               'time':None},
+        'training_stats':{'total_train_time':None,
+                          'epoch_time':[],
+                          'epoch_average_batch_loss':[]}}
+    return model
 
   def load_model(self,file_path):
     try:
@@ -47,3 +62,4 @@ class ModelEvaluator:
       return self.models[model_name]['training_stats']['epoch_average_batch_loss']
     else:
       print('Could not find '+ model_name)
+
