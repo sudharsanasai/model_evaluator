@@ -57,9 +57,3 @@ class ModelEvaluator:
       os.remove(self.file_path)
       self.models = {}
 
-  def retreive_loss_over(self,model_name):
-    if model_name in self.model.keys():
-      return self.models[model_name]['training_stats']['epoch_average_batch_loss']
-    else:
-      print('Could not find '+ model_name)
-
