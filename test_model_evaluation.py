@@ -1,5 +1,6 @@
 import unittest
 import model_evaluator as me
+from torch import optim,nn
 
 class TestModelEvaluator(unittest.TestCase):
   def __init__(self, *args, **kwargs):
@@ -16,6 +17,16 @@ class TestModelEvaluator(unittest.TestCase):
                           'epoch_time':['k'],
                           'epoch_average_batch_loss':['l']}}
         self.model_evaluator_empty = me.Model('fashion_mnist','fashion_mnist_test.pkl')
+        self.model = nn.Sequential(
+                    nn.Linear(784,128),
+                    nn.ReLU(),
+                    nn.Linear(128,32),
+                    nn.ReLU(),
+                    nn.Linear(32,10),
+                    nn.LogSoftmax(dim=1))
+#defining the loss
+        self.criterion = nn.NLLLoss()
+        self.optimizer = optim.Adam(self.model.parameters(),lr=0.01)
         
   
   def test_reset_experiment(self):
@@ -54,6 +65,23 @@ class TestModelEvaluator(unittest.TestCase):
     model_evaluator.add_model('fashion_mnist_2')
     self.assertEqual(len(model_evaluator.models),1)
     
+  def test_add_model_architecture_model_notnone(self):
+    model_evaluator = self.model_evaluator_empty
+    model_evaluator.reset_experiment()
+    model_evaluator.add_model_architecture(self.model,self.criterion,self.optimizer)
+    self.assertIsNotNone(model_evaluator.model['model_architecture']['model'])
+    
+  def test_add_model_architecture_criterion_notnone(self):
+    model_evaluator = self.model_evaluator_empty
+    model_evaluator.reset_experiment()
+    model_evaluator.add_model_architecture(self.model,self.criterion,self.optimizer)
+    self.assertIsNotNone(model_evaluator.model['model_architecture']['criterion'])
+    
+  def test_add_model_architecture_optimizer_notnone(self):
+    model_evaluator = self.model_evaluator_empty
+    model_evaluator.reset_experiment()
+    model_evaluator.add_model_architecture(self.model,self.criterion,self.optimizer)
+    self.assertIsNotNone(model_evaluator.model['model_architecture']['optimizer'])
     
 if __name__ == '__main__':
 	unittest.main()

@@ -83,3 +83,8 @@ class Model:
       is_valid = False
         
     return is_valid
+  
+  def add_model_architecture(self,model,criterion,optimizer):
+    self.model['model_architecture']['model'] = str(model)
+    self.model['model_architecture']['criterion'] = str(criterion)
+    self.model['model_architecture']['optimizer'] = str(optimizer)
