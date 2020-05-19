@@ -1,5 +1,6 @@
 import os
 import torch
+import datetime
 
 class Model:
   
@@ -88,3 +89,15 @@ class Model:
     self.model['model_architecture']['model'] = str(model)
     self.model['model_architecture']['criterion'] = str(criterion)
     self.model['model_architecture']['optimizer'] = str(optimizer)
+    
+  def add_training_parameters(self,epochs,train_loader,model):
+    self.model['training_parameters']['epochs'] = epochs
+    self.model['training_parameters']['no_of_steps_per_epoch'] = len(train_loader)
+    if next(model.parameters()).is_cuda:
+      self.model['training_parameters']['device'] = 'gpu'
+    else:
+      self.model['training_parameters']['device'] = 'cpu'
+      
+    self.model['training_parameters']['time'] = str(datetime.datetime.now())
+    
+  

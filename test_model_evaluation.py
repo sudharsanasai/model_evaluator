@@ -30,6 +30,10 @@ class TestModelEvaluator(unittest.TestCase):
     self.model_evaluator = self.model_evaluator_empty
     self.model_evaluator.reset_experiment()
     self.model_evaluator_empty.reset_experiment()
+    self.epochs = 10
+    self.no_of_batches = 800
+    self.cuda_is_available = True
+    self.cuda_is_available = False
   
   def test_reset_experiment(self):
     self.model_evaluator.model = self.loaded_dummy_dict
@@ -68,6 +72,32 @@ class TestModelEvaluator(unittest.TestCase):
   def test_add_model_architecture_optimizer_notnone(self):
     self.model_evaluator.add_model_architecture(self.model,self.criterion,self.optimizer)
     self.assertIsNotNone(self.model_evaluator.model['model_architecture']['optimizer'])
+    
+  def test_add_training_parameters_epochs_notnone(self):
+    self.model_evaluator.add_training_parameters(self.epochs,self.no_of_batches,self.model)
+    self.assertIsNotNone(self.model_evaluator.model['training_parameters']['epochs'])
+    
+  def test_add_training_parameters_no_of_batches_notnone(self):
+    self.model_evaluator.add_training_parameters(self.epochs,self.no_of_batches,self.model)
+    self.assertIsNotNone(self.model_evaluator.model['training_parameters']['no_of_steps_per_epoch'])
+    
+  def test_add_training_parameters_device_notnone(self):
+    self.model_evaluator.add_training_parameters(self.epochs,self.no_of_batches,self.model)
+    self.assertIsNotNone(self.model_evaluator.model['training_parameters']['device'])
+    
+  def test_add_training_parameters_time_notnone(self):
+    self.model_evaluator.add_training_parameters(self.epochs,self.no_of_batches,self.model)
+    self.assertIsNotNone(self.model_evaluator.model['training_parameters']['time'])
+    
+  def test_add_training_parameters_device_cpu(self):
+    self.model_evaluator.add_training_parameters(self.epochs,self.no_of_batches,self.model)
+    self.assertEqual(self.model_evaluator.model['training_parameters']['device'],'cpu')
+  
+  @unittest.skip("GPU Unavailable to test the scenario")  
+  def test_add_training_parameters_device_gpu(self):
+    self.model = self.model.cuda()
+    self.model_evaluator.add_training_parameters(self.epochs,self.no_of_batches,self.model)
+    self.assertEqual(self.model_evaluator.model['training_parameters']['device'],'gpu')
     
 if __name__ == '__main__':
 	unittest.main()
