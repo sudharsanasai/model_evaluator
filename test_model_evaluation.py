@@ -1,6 +1,9 @@
 import unittest
 import model_evaluator as me
 from torch import optim,nn
+from torchvision import datasets, transforms
+import torch
+
 
 class TestModelEvaluator(unittest.TestCase):
 
@@ -31,9 +34,16 @@ class TestModelEvaluator(unittest.TestCase):
     self.model_evaluator.reset_experiment()
     self.model_evaluator_empty.reset_experiment()
     self.epochs = 10
-    self.no_of_batches = 800
     self.cuda_is_available = True
     self.cuda_is_available = False
+    
+    self.transform = transforms.Compose([transforms.ToTensor(),
+                                         transforms.Normalize((0.5,), (0.5,))])
+    # Download and load the training data
+    self.trainset = datasets.FashionMNIST('~/.pytorch/F_MNIST_data/', download=True, train=True, transform=self.transform)
+    self.trainloader = torch.utils.data.DataLoader(self.trainset, batch_size=64, shuffle=True)
+
+
   
   def test_reset_experiment(self):
     self.model_evaluator.model = self.loaded_dummy_dict
@@ -74,29 +84,29 @@ class TestModelEvaluator(unittest.TestCase):
     self.assertIsNotNone(self.model_evaluator.model['model_architecture']['optimizer'])
     
   def test_add_training_parameters_epochs_notnone(self):
-    self.model_evaluator.add_training_parameters(self.epochs,self.no_of_batches,self.model)
+    self.model_evaluator.add_training_parameters(self.epochs,self.trainloader,self.model)
     self.assertIsNotNone(self.model_evaluator.model['training_parameters']['epochs'])
     
   def test_add_training_parameters_no_of_batches_notnone(self):
-    self.model_evaluator.add_training_parameters(self.epochs,self.no_of_batches,self.model)
+    self.model_evaluator.add_training_parameters(self.epochs,self.trainloader,self.model)
     self.assertIsNotNone(self.model_evaluator.model['training_parameters']['no_of_steps_per_epoch'])
     
   def test_add_training_parameters_device_notnone(self):
-    self.model_evaluator.add_training_parameters(self.epochs,self.no_of_batches,self.model)
+    self.model_evaluator.add_training_parameters(self.epochs,self.trainloader,self.model)
     self.assertIsNotNone(self.model_evaluator.model['training_parameters']['device'])
     
   def test_add_training_parameters_time_notnone(self):
-    self.model_evaluator.add_training_parameters(self.epochs,self.no_of_batches,self.model)
+    self.model_evaluator.add_training_parameters(self.epochs,self.trainloader,self.model)
     self.assertIsNotNone(self.model_evaluator.model['training_parameters']['time'])
     
   def test_add_training_parameters_device_cpu(self):
-    self.model_evaluator.add_training_parameters(self.epochs,self.no_of_batches,self.model)
+    self.model_evaluator.add_training_parameters(self.epochs,self.trainloader,self.model)
     self.assertEqual(self.model_evaluator.model['training_parameters']['device'],'cpu')
   
   @unittest.skip("GPU Unavailable to test the scenario")  
   def test_add_training_parameters_device_gpu(self):
     self.model = self.model.cuda()
-    self.model_evaluator.add_training_parameters(self.epochs,self.no_of_batches,self.model)
+    self.model_evaluator.add_training_parameters(self.epochs,self.trainloader,self.model)
     self.assertEqual(self.model_evaluator.model['training_parameters']['device'],'gpu')
     
 if __name__ == '__main__':
